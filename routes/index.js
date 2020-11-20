@@ -5,7 +5,7 @@ var router = express.Router();
 const { Client, Query } = require('pg')
 
 // Setup connection
-var username = "postgres" // sandbox username
+var username = "tomek" // sandbox username
 var password = "admin" // read only privileges on our table
 var host = "localhost:5432"
 var database = "cambridge" // database name

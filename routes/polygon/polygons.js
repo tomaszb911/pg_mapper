@@ -108,4 +108,21 @@ router.post("/polygon", (req, res) => {
     });
   });
 
+//TODO: prepare proper query
+  router.put("/polygon/:id",function (req, res) {
+
+    var body = req.body;
+
+    var update_query = ""
+
+    var client = new Client(conString);
+    client.connect();
+    var query = client.query(new Query(update_query));
+    query.on("end", function (result) {
+      console.log("Updated polygon" + result);
+      res.send(200);
+    });
+
+  })
+
   module.exports = router;

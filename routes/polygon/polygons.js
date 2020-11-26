@@ -86,6 +86,39 @@ router.get("/point*", function (req, res) {
   }
 });
 
+router.get("/polygon/:id", (req,res) => {
+  
+  let id = req.params.id;
+  if (
+    id.indexOf("--") > -1 ||
+    id.indexOf("'") > -1 ||
+    id.indexOf(";") > -1 ||
+    id.indexOf("/*") > -1 ||
+    id.indexOf("xp_") > -1
+  ) {
+    console.log("Bad request detected");
+    res.redirect("/polygons");
+    return;
+  } else {
+    console.log("Request passed");
+
+    var filtered_query =
+      "SELECT * FROM areas ar WHERE id = " + id;
+      var client = new Client(conString);
+      client.connect();
+      var query = client.query(new Query(filtered_query));
+      query.on("end", function (result) {
+
+        if(!result.rows[0]){
+          res.sendStatus(404);
+          return;
+        }else{
+          res.json(result.rows[0]);
+        }
+      
+      });
+}});
+
 router.post("/polygon", (req, res) => {
   var body = req.body;
   var insert_query =

@@ -1,6 +1,6 @@
 const { Sequelize, Model, DataTypes, GEOMETRY } = require("sequelize");
 const sequelize = new Sequelize(
-  "postgres://tomek:admin@localhost.com:5432/cambridge"
+  "postgres://tomek:admin@localhost:5432/cambridge"
 ); // Example for postgres
 
 class Polygon extends Model {}
@@ -9,6 +9,7 @@ Polygon.init(
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
+      autoIncrement: true
     },
     name: DataTypes.STRING,
     polygon: DataTypes.GEOMETRY,
@@ -16,33 +17,71 @@ Polygon.init(
   { sequelize, modelName: "polygon" }
 );
 
-async ()=>{
-try {
+async function testConnection() {
+  try {
     await sequelize.authenticate();
-    console.log('Connection has been established successfully.');
+    console.log("Connection has been established successfully.");
   } catch (error) {
-    console.error('Unable to connect to the database:', error);
-  };
+    console.error("Unable to connect to the database:", error);
+  }
 }
-console.log('dupa');
-async () => {
+
+const syncDB = async () => {
+  Polygon.sync({ force: true });
+  console.log("DB synchronized");
+};
+
+const createPolygon = async () => {
   await sequelize.sync();
-  console.log('dupa2');
-  const polygon = await Polygon.create({
-    id: 100,
-    name: "UY",
-    polygon: new GEOMETRY({
-      type: "Polygon",
-      coordinates: [
-        [-55.533983755764275 - 30.20250225922603],
-        [-52.179804611647036 - 32.28855686574439],
-        [-53.39266883139066 - 35.32705689944584],
-        [-58.95530309281274 - 34.77933770222158],
-        [-58.46975193045364 - 29.617364757236118],
-        [-55.533983755764275 - 30.20250225922603],
+  console.log("dupa2");
+
+  var polygonST = {
+    type: "Polygon",
+    coordinates: [
+      [
+        [100.0, 0.0],
+        [101.0, 0.0],
+        [101.0, 1.0],
+        [100.0, 1.0],
+        [100.0, 0.0],
       ],
-    }),
-  }).finally(()=> console.log("Finally"));
-  console.log('Should be created')
+    ],
+  };
+  var insertedpolygon = {
+    type: "Polygon",
+    coordinates: [
+      [
+        [-62.0532486669848, 16.09192143412939],
+        [-62.86394262924544, 17.36959167879405],
+        [-61.58714703329128, 18.147417610639263],
+        [-60.687173544412985, 16.879729961893045],
+        [-62.0532486669848, 16.09192143412939],
+      ],
+    ],
+  };
+  const polygon = await Polygon.create({
+    id: 102,
+    name: "UY",
+    polygon: insertedpolygon,
+  }).finally(() => console.log("Finally"));
   console.log(polygon.toJSON());
+};
+
+const createPolygonPost = async (bodyName, bodyPolygon) => {
+  await sequelize.sync();
+  var postPolygon = { type: "Polygon", coordinates: [bodyPolygon] };
+  const polygon = await Polygon.create({
+    name: bodyName,
+    polygon: postPolygon,
+  })
+    .catch((error) => console.error(error))
+    .finally(() => console.log("Finally"));
+  console.log(polygon.toJSON());
+};
+
+// testConnection().then(console.log).catch(console.error)
+// syncDB().then(console.log).catch(console.error)
+// createPolygon().then(console.log).catch(console.error)
+module.exports = {
+  createPolygonPost,
 };

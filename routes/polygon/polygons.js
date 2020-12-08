@@ -1,11 +1,12 @@
-var express = require("express");
-var router = express.Router();
+const express = require("express");
+const Polygon = require('../../src/model/polygon')
+const router = express.Router();
 
 const conString = require("../../src/db/postgres");
 /* PostgreSQL and PostGIS module and connection setup */
 const { Client, Query } = require("pg");
 
-var polygons_query =
+const polygons_query =
   "SELECT row_to_json(fc) FROM ( SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) As features FROM (SELECT 'Feature' As type, ST_AsGeoJSON(lg.polygon)::json As geometry, row_to_json((id, name)) As properties FROM areas As lg) As f) As fc";
 
 /* GET the polygons page */
@@ -106,11 +107,18 @@ router.post("/polygon", (req, res) => {
   });
 });
 
+//post with sequalizer ORM
+
+router.post("/polygon2", (req,res) => {
+  var body = req.body;
+  Polygon.createPolygonPost(body.name, body.polygon).then(res.status(200)).catch(err=> res.send(err))
+});
+
 router.put("/polygon/:id", function (req, res) {
   var body = req.body;
   var id = req.params.id;
   var update_query =
-    "UPDATE areas SET polygon = st_geometryfromtext('POLYGON((" +
+    "UPDATE areas SET name = \'"+body.name +"\', polygon = st_geometryfromtext('POLYGON((" +
     body.polygon +
     "))') where id =" +
     id +

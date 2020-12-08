@@ -1,10 +1,11 @@
 const express = require("express");
-const Polygon = require('../../src/model/polygon')
+const Polygon = require("../../src/model/polygon");
 const router = express.Router();
 
 const conString = require("../../src/db/postgres");
 /* PostgreSQL and PostGIS module and connection setup */
 const { Client, Query } = require("pg");
+const { response } = require("express");
 
 const polygons_query =
   "SELECT row_to_json(fc) FROM ( SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) As features FROM (SELECT 'Feature' As type, ST_AsGeoJSON(lg.polygon)::json As geometry, row_to_json((id, name)) As properties FROM areas As lg) As f) As fc";
@@ -25,6 +26,15 @@ router.get("/polygons", function (req, res) {
       jsonData: data, // Pass data to the View
     });
   });
+});
+
+router.get("/polygons2", function (req, res) {
+  Polygon.getAllPolygons().then((response) => res.send(response));
+});
+
+router.get("/polygon/:id", function (req, res) {
+  var id = req.params.id;
+  Polygon.findPolygonById(id).then((response) => res.send(response));
 });
 
 /* GET the filtered country */
@@ -109,16 +119,20 @@ router.post("/polygon", (req, res) => {
 
 //post with sequalizer ORM
 
-router.post("/polygon2", (req,res) => {
+router.post("/polygon2", (req, res) => {
   var body = req.body;
-  Polygon.createPolygonPost(body.name, body.polygon).then(res.status(200)).catch(err=> res.send(err))
+  Polygon.createPolygonPost(body.name, body.polygon)
+    .then(res.status(200))
+    .catch((err) => res.send(err));
 });
 
 router.put("/polygon/:id", function (req, res) {
   var body = req.body;
   var id = req.params.id;
   var update_query =
-    "UPDATE areas SET name = \'"+body.name +"\', polygon = st_geometryfromtext('POLYGON((" +
+    "UPDATE areas SET name = '" +
+    body.name +
+    "', polygon = st_geometryfromtext('POLYGON((" +
     body.polygon +
     "))') where id =" +
     id +
@@ -131,6 +145,13 @@ router.put("/polygon/:id", function (req, res) {
     console.log("Updated polygon" + result);
     res.send(200);
   });
+});
+
+router.put("/polygon2/:id", function (req, res) {
+  const id = req.params.id;
+  Polygon.updatePolygon(id, req.body.name, req.body.polygon).then((response) =>
+    res.send(response)
+  );
 });
 
 module.exports = router;

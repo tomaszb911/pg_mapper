@@ -9,7 +9,7 @@ Polygon.init(
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
-      autoIncrement: true
+      autoIncrement: true,
     },
     name: DataTypes.STRING,
     polygon: DataTypes.GEOMETRY,
@@ -79,9 +79,32 @@ const createPolygonPost = async (bodyName, bodyPolygon) => {
   console.log(polygon.toJSON());
 };
 
-// testConnection().then(console.log).catch(console.error)
-// syncDB().then(console.log).catch(console.error)
-// createPolygon().then(console.log).catch(console.error)
+const getAllPolygons = async () => {
+  var response;
+  return await Polygon.findAll().then((res) => (response = res));
+};
+
+const findPolygonById = async (id) => {
+  var response;
+  return await Polygon.findByPk(id).then((res) => (response = res));
+};
+
+const updatePolygon = async (id, name, polygon) => {
+  await sequelize.sync();
+  var postPolygon = { type: "Polygon", coordinates: [polygon] };
+  const updatedPolygon = await Polygon.update(
+    { name: name, polygon: postPolygon },
+    {
+      where: { id: id },
+    }
+  )
+    .catch((error) => console.error(error))
+    .finally(() => console.log("Polygon updated"));
+  console.log(updatePolygon);
+};
 module.exports = {
   createPolygonPost,
+  getAllPolygons,
+  findPolygonById,
+  updatePolygon
 };

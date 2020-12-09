@@ -40,7 +40,7 @@ router.get("/polygon/:id", function (req, res) {
 router.post("/polygon", (req, res) => {
   var body = req.body;
   Polygon.createPolygonPost(body.name, body.polygon)
-    .then(res.status(200))
+    .then(response => res.send(response))
     .catch((err) => res.send(err));
 });
 

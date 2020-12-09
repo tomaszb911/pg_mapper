@@ -36,6 +36,7 @@ router.get("/polygon/:id", function (req, res) {
 
 //post with sequalizer ORM
 
+
 router.post("/polygon", (req, res) => {
   var body = req.body;
   Polygon.createPolygonPost(body.name, body.polygon)

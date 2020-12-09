@@ -31,41 +31,6 @@ const syncDB = async () => {
   console.log("DB synchronized");
 };
 
-const createPolygon = async () => {
-  await sequelize.sync();
-  console.log("dupa2");
-
-  var polygonST = {
-    type: "Polygon",
-    coordinates: [
-      [
-        [100.0, 0.0],
-        [101.0, 0.0],
-        [101.0, 1.0],
-        [100.0, 1.0],
-        [100.0, 0.0],
-      ],
-    ],
-  };
-  var insertedpolygon = {
-    type: "Polygon",
-    coordinates: [
-      [
-        [-62.0532486669848, 16.09192143412939],
-        [-62.86394262924544, 17.36959167879405],
-        [-61.58714703329128, 18.147417610639263],
-        [-60.687173544412985, 16.879729961893045],
-        [-62.0532486669848, 16.09192143412939],
-      ],
-    ],
-  };
-  const polygon = await Polygon.create({
-    id: 102,
-    name: "UY",
-    polygon: insertedpolygon,
-  }).finally(() => console.log("Finally"));
-  console.log(polygon.toJSON());
-};
 
 const createPolygonPost = async (bodyName, bodyPolygon) => {
   await sequelize.sync();

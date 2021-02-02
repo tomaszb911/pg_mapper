@@ -9,4 +9,6 @@ var database = "cambridge"; // database name
 var conString =
   "postgres://" + username + ":" + password + "@" + host + "/" + database; // Your Database Connection
 
-module.exports = conString
+module.exports = {
+  conString
+}

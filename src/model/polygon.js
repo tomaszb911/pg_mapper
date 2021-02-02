@@ -1,6 +1,7 @@
+const { conString } = require('../db/postgres');
 const { Sequelize, Model, DataTypes, GEOMETRY } = require("sequelize");
 const sequelize = new Sequelize(
-  "postgres://tomek:admin@localhost:5432/cambridge"
+  conString
 ); // Example for postgres
 
 class Polygon extends Model {}
